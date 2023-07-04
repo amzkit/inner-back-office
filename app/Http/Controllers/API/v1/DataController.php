@@ -178,7 +178,7 @@ class DataController extends Controller
                         $stall->save();
                     }
 
-                    $sale = Sale::where([['sale_date', '=', $sale_date], ['stall_number', '=', $stall_number]])->first();
+                    $sale = Sale::where([['sale_date', '=', $sale_date], ['stall_number', '=', $stall_number]])->orderBy('sale_date')->first();
                     if(!$sale){
                         $sale = new Sale();
                         $sale->sale_date = $sale_date;
