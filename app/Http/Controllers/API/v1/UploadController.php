@@ -70,7 +70,7 @@ class UploadController extends Controller
             }
 
             $sheetCount = $spreadsheet->getSheetCount(); 
-
+            $sheetCount = 2;
             for ($j = 0; $j < $sheetCount; $j++) 
             {
                 $worksheet = $spreadsheet->getSheet($j);
