@@ -114,7 +114,7 @@ class UploadController extends Controller
                 // Skip header row $i=2
                 $sales = array();
 
-                for ($i = 2; $i <= 200; $i++) {
+                for ($i = 2; $i <= 100; $i++) {
 
                     $row = $worksheet->rangeToArray('A' . $i . ':' . $maxCol . $i)[0];
                     //$order = Order::join('shipments', 'orders.id', '=', 'shipments.order_id')->first();
