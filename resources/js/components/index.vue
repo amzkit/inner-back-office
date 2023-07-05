@@ -22,7 +22,8 @@
                             :chartdata="chart_data"
                             :options="options"
                         />
-             
+
+
 
                         <table>
                             <tr><td>วันที่</td><td class="pl-2 text-center">ยอดขาย</td><td class="pl-2 text-center">จำนวน</td></tr>
@@ -54,9 +55,9 @@ export default {
         stall_sale_list: [],
 
         headers: [
-            { text: 'ลำดับ', value: 'index', align: 'center', sortable: false},
-            { text: 'ชื่อสินค้า', value: 'product_title', align: 'start' , sortable: false},
-            { text: 'จำนวน', value: 'amount', align: 'center' , sortable: false},
+            { text: 'วันที่', value: 'sale_date', align: 'center', sortable: false},
+            { text: 'ยอด', value: 'sale_total', align: 'start' , sortable: false},
+            { text: 'จำนวน', value: 'sale_count', align: 'center' , sortable: false},
         ],
         dataLoaded: false,
         options: {
@@ -129,8 +130,9 @@ export default {
             axios
             .get('/api/stall/sales', {params:{stall_number:this.select_stall_number}}).then(response => {
                 if (response.data.success == true) {
+                    this.stall_sale_list = []
                     this.stall_sale_list = response.data.stall_sale_list
-                    console.log(this.stall_sale_list)
+                    // console.log(this.stall_sale_list)
                 }
             })
             .catch(error => {

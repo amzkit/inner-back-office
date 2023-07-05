@@ -52,18 +52,44 @@ class DataController extends Controller
         //$stall = Stall::where([['number'=>$stall_number]])->first();
 
         $stall_sale_list = array();
-        $sales = Sale::where([['stall_number', '=', $stall_number]])->get();
+        $sales = Sale::where([['stall_number', '=', $stall_number]])->orderBy('sale_date', 'DESC')->get();
 
         //dd($sales);
         $total_sum = 0;
         $count_sum = 0;
+        $week_sum = 0;
+
+        $week_count = 0;
+
         foreach($sales as $i=>$sale){
             $temp = ['sale_date'=>$sale->sale_date, 'sale_total'=>$sale->sale_total, 'sale_count'=>$sale->sale_count];
             $total_sum += $sale->sale_total;
             $count_sum += $sale->sale_count;
-            array_push($stall_sale_list, $temp);
-        }
+            
 
+
+            array_push($stall_sale_list, $temp);
+
+            $day_of_week = date('w', strtotime($sale->sale_date));
+            $temp['day_of_week'] = $day_of_week;
+            $temp['prv_of_week'] = $previous_day_of_week??6;
+            
+            if($i == 0) $previous_day_of_week = $day_of_week;
+            if($day_of_week <= $previous_day_of_week){
+                $week_sum += $sale->sale_total;
+                $week_count += $sale->sale_count;
+                if($i+1 == count($sales)){
+                    array_push($stall_sale_list, ['sale_date'=>'week sum', 'sale_total'=>$week_sum, 'sale_count'=>$week_count]);
+                }
+            }else{
+                $week_sum += $sale->sale_total;
+                $week_count += $sale->sale_count;
+                array_push($stall_sale_list, ['sale_date'=>'week sum', 'sale_total'=>$week_sum, 'sale_count'=>$week_count]);
+                $week_sum = 0;
+                $week_count = 0;
+            }
+            $previous_day_of_week = $day_of_week;
+        }
         array_push($stall_sale_list, ['sale_date'=>'รวม', 'sale_total'=>$total_sum, 'sale_count'=>$count_sum]);
 
         return response()->json(['success'=>true, 'stall_sale_list'=>$stall_sale_list]);
@@ -178,7 +204,7 @@ class DataController extends Controller
                         $stall->save();
                     }
 
-                    $sale = Sale::where([['sale_date', '=', $sale_date], ['stall_number', '=', $stall_number]])->orderBy('sale_date')->first();
+                    $sale = Sale::where([['sale_date', '=', $sale_date], ['stall_number', '=', $stall_number]])->first();
                     if(!$sale){
                         $sale = new Sale();
                         $sale->sale_date = $sale_date;
@@ -187,9 +213,6 @@ class DataController extends Controller
                         $sale->sale_count = str_replace(',', '', $sale_count);
                         $sale->transaction_fee = str_replace(',', '', $transaction_fee);
                         $sale->sale_fee = str_replace(',', '', $sale_fee);
-                        if($stall_number == 'C292'){
-                            //dd($sale_fee, $sale_date, $sale_total, $stall_number);
-                        }
                         $sale->save();
                     }
 
