@@ -9,6 +9,34 @@
 
                     <v-card-text>
                         <v-select
+                            v-model="select_team"
+                            :items="team_list"
+                            item-text="name"
+                            label="เลือกเชฟ"
+                            dense
+                            required
+                        />
+                        <table v-if="team_sale_list.length">
+                            <tr>
+                            <th></th><th class="pl-2 text-end">วันที่</th><th class="pl-2 text-center">ยอดขาย</th><th class="pl-2 text-center">จำนวน</th>
+                            </tr>
+                            <tr><td><b>{{ team.name }}</b></td>
+                                <td class="pl-2 text-end font-weight-bold">รวมทุกบูธ</td>
+                                <td class="pl-2 text-end font-weight-bold">{{ team.team_sale_total_sum }}</td>
+                                <td class="pl-2 text-end font-weight-bold">{{ team.team_sale_count_sum }}</td>
+                            </tr>
+
+                            <template v-for="(stall) in team_sale_list" :key="stall.stall_number">
+                                <tr v-for="(sale, sale_index) in stall.sales" :key="stall.stall_number+sale.sale_date+sale.sale_date+sale.sale_total+sale.sale_count">
+                                    <td><template v-if="sale_index==0"><b>{{ stall.stall_number }}</b></template></td>
+                                    <td class="pl-2 text-end"><b>{{ sale.sale_date }}</b></td>
+                                    <td class="pl-2 text-end">{{ sale.sale_total }}</td>
+                                    <td class="pl-2 text-end">{{ sale.sale_count }}</td>
+                                </tr>
+                            </template>
+                              
+                        </table>
+                        <v-select
                             v-model="select_stall_number"
                             :items="stall_list"
                             label="เลือกบูธ"
@@ -23,11 +51,9 @@
                             :options="options"
                         />
 
-
-
-                        <table>
+                        <table v-if="stall_sale_list.length">
                             <tr><td>วันที่</td><td class="pl-2 text-center">ยอดขาย</td><td class="pl-2 text-center">จำนวน</td></tr>
-                            <tr v-for="sale in stall_sale_list" :key="sale.sale_date">
+                            <tr v-for="sale in stall_sale_list" :key="sale.sale_date+sale.sale_total+sale.sale_count">
                                 <td><b>{{ sale.sale_date }}</b></td>
                                 <td class="pl-2 text-end">{{ sale.sale_total }}</td>
                                 <td class="pl-2 text-end">{{ sale.sale_count }}</td>
@@ -51,8 +77,13 @@ export default {
         loading: true,
         select_stall_number: '',
         stall_list: [],
+        select_team: '',
+        team: null,
+        team_list: [],
 
         stall_sale_list: [],
+        team_sale_list: [],
+
 
         headers: [
             { text: 'วันที่', value: 'sale_date', align: 'center', sortable: false},
@@ -97,6 +128,9 @@ export default {
     watch: {
         select_stall_number(){
             this.getStallSales()
+        },
+        select_team(){
+            this.getTeamSales()
         }
     },
 
@@ -118,6 +152,17 @@ export default {
             .catch(error => {
                 console.log("getting data error");
             });
+
+            axios
+            .get('/api/teams').then(response => {
+                if (response.data.success == true) {
+                    this.team_list = response.data.team_list
+                }
+            })
+            .catch(error => {
+                console.log("getting data error");
+            });
+
             this.loading = false
         },
 
@@ -125,7 +170,6 @@ export default {
             this.loading = true
 
             console.log("getting stall sales");
-
 
             axios
             .get('/api/stall/sales', {params:{stall_number:this.select_stall_number}}).then(response => {
@@ -141,7 +185,25 @@ export default {
             this.loading = false
         },
 
+        getTeamSales(){
+            this.loading = true
 
+            console.log("getting team sales");
+
+            axios
+            .get('/api/team/sales', {params:{team:this.select_team}}).then(response => {
+                if (response.data.success == true) {
+                    this.team_sale_list = []
+                    this.team_sale_list = response.data.team_sale_list
+                    this.team = response.data.team
+                    // console.log(this.stall_sale_list)
+                }
+            })
+            .catch(error => {
+                console.log("getting data error");
+            });
+            this.loading = false
+        },
     },
 };
 </script>
