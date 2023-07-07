@@ -16,6 +16,10 @@ use App\Models\Sale;
 use App\Models\Stall;
 use App\Models\Team;
 use App\Models\TeamStall;
+use DateTime;
+use DatePeriod;
+use DateInterval;
+use stdClass;
 
 class DataController extends Controller
 {
@@ -117,6 +121,54 @@ class DataController extends Controller
         $team_sale_list = [];
         $team_sale_total_sum = 0;
         $team_sale_count_sum = 0;
+
+        $from = date('20230701');
+        $to = date('Ymd');
+
+        $dates = new DatePeriod(new DateTime($from), new DateInterval('P1D'), new DateTime($to));
+
+        $team_sale_list = array();
+
+        $stall_list = [];
+        foreach($team_stalls as $stall){
+            array_push($stall_list, $stall->stall_number);
+        }
+        array_push($stall_list, 'รวม');
+        $team_sale_list['header'] = $stall_list;
+
+        $stall_sales_by_date = array();
+        $stall_sum = array();
+        $team_sum = 0;
+        foreach($dates as $i=>$date){
+            $temp = [];
+            $sale_date_sum = 0.0;
+            foreach($team_stalls as $j=>$stall){
+                $sale = Sale::where([
+                    ['stall_number', '=', $stall->stall_number],
+                    ['sale_date','=', $date]
+                    ])->first();
+                array_push($temp, $sale->sale_total??0.0);
+                if(!array_key_exists($j, $stall_sum)){
+                    //$stall_sum[$stall->stall_number] = 0;
+                    $stall_sum[$j] = 0;
+
+                }
+                //$stall_sum[$stall->stall_number] += $sale->sale_total??0.0;
+                $stall_sum[$j] += $sale->sale_total??0.0;
+
+                $sale_date_sum += $sale->sale_total??0.0;
+            }
+            array_push($temp, $sale_date_sum);
+            $stall_sales_by_date[$date->format('Y-m-d')] = $temp;
+        }
+        //dd($sales_by_date);
+        $stall_sum[count($stall_list)] = array_sum($stall_sum);
+
+        $stall_sales_by_date['รวม'] = $stall_sum;
+        $team_sale_list['sales_by_date'] = $stall_sales_by_date;
+
+
+        /*
         foreach($team_stalls as $i=>$stall){
 
             $stall_number = $stall->stall_number;
@@ -125,8 +177,7 @@ class DataController extends Controller
             //$stall = Stall::where([['number'=>$stall_number]])->first();
     
             $stall_sale_list = array();
-            $from = date('20230701');
-            $to = date('Ymd');
+
             $sales = Sale::where([['stall_number', '=', $stall_number]])
                 ->orderBy('sale_date', 'DESC')
                 ->whereBetween('sale_date', [$from, $to])
@@ -172,8 +223,9 @@ class DataController extends Controller
             array_push($team_sale_list, ['stall_number'=>$stall_number, 'sales'=>$stall_sale_list]);
         }
         $team = $team->toArray();
-        $team['team_sale_total_sum'] = $team_sale_total_sum;
-        $team['team_sale_count_sum'] = $team_sale_count_sum;
+        */
+        //$team['team_sale_total_sum'] = $team_sale_total_sum;
+        //$team['team_sale_count_sum'] = $team_sale_count_sum;
 
 
         return response()->json(['success'=>true, 'team'=>$team, 'team_sale_list'=>$team_sale_list]);

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
-class Team extends Model
+class Vendor extends Model
 {
 
     /**
@@ -18,7 +18,7 @@ class Team extends Model
     protected $fillable = [
         'id',
         'name',
-        'type',
+        'stall_number'
     ];
 
     /**
