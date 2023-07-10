@@ -1,6 +1,6 @@
 <template>
     <div id="dashboard-owner">
-        <v-row justify="center" class="mb-1">
+        <v-row justify="center" class="pl-2 pr-2 mb-1">
             <v-col class="my-1 py-0 ">
                 <v-card :loading="loading">
                     <v-card-title>
