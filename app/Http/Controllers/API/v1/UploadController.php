@@ -129,9 +129,9 @@ class UploadController extends Controller
     
     
                     // Skip header row $i=2
-    
+
                     for ($i = 2; $i <= 100; $i++) {
-    
+
                         $row = $worksheet->rangeToArray('A' . $i . ':' . $maxCol . $i)[0];
                         //$order = Order::join('shipments', 'orders.id', '=', 'shipments.order_id')->first();
                         //dd($row);
@@ -196,11 +196,16 @@ class UploadController extends Controller
                     //dd($header_row,$header_row[5],
                     //    date('Ymd', strtotime(date('Y').'-'.explode('月',$header_row[4])[0].'-'.explode('日', explode('月',$header_row[4])[1])[0])),
                     //);
+                    $spreadsheet->getSheet($j);
+                    $db = $spreadsheet->getActiveSheet()->toArray();
 
                     //dd($sale_date_header);
                     for($row = 3; $row <= 100; $row++){
-                        $data = $worksheet->rangeToArray('A' . $row . ':' . $maxCol . $row)[0];
-
+                        if(!isset($db[$row])){
+                            continue;
+                        }
+                        $data = $db[$row];
+//                        dd($data);
 
                         $stall_number = trim($data[$index['stall_number']]);
                         if($stall_number && $stall_number[0] !== 'C'){
