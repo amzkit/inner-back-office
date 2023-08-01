@@ -196,9 +196,9 @@ class UploadController extends Controller
                     //dd($header_row,$header_row[5],
                     //    date('Ymd', strtotime(date('Y').'-'.explode('月',$header_row[4])[0].'-'.explode('日', explode('月',$header_row[4])[1])[0])),
                     //);
-                    $spreadsheet->getSheet($j);
+                    $spreadsheet->setActiveSheetIndex($j);
+                    $data = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(2,0)->getValue();
                     $db = $spreadsheet->getActiveSheet()->toArray();
-
                     //dd($sale_date_header);
                     for($row = 3; $row <= 100; $row++){
                         if(!isset($db[$row])){
@@ -214,7 +214,7 @@ class UploadController extends Controller
                         }
                         //dd($data);
                         for($col = 3; $col < count($data); $col++){
-                            if($data[$col] == '' || $data[$col] == null)    continue;
+                            if(!isset($data[$col]) || $data[$col] == '' || $data[$col] == null)    continue;
                             //dd($sale_date_header[$col], $data[$col]);
                             $sale_date = $sale_date_header[$col];
                             $sale_total = $data[$col];
