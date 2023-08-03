@@ -54,7 +54,7 @@ class UploadController extends Controller
                 ]
             );
 
-    
+
             //$public_path = Util::getUserStoragePath('tracking_number/', true);
             $public_path = 'public/upload/';
             $storage_path = 'storage/upload/';
