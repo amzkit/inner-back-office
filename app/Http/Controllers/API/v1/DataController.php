@@ -122,7 +122,7 @@ class DataController extends Controller
         $team_sale_total_sum = 0;
         $team_sale_count_sum = 0;
 
-        $from = date('20230701');
+        $from = date('20230801');
         $to = date('Ymd');
 
         $dates = new DatePeriod(new DateTime($from), new DateInterval('P1D'), new DateTime($to));

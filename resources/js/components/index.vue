@@ -16,45 +16,48 @@
                             dense
                             required
                         />
-                        <table v-if="team" class="mb-5">
-                            <tr><td><b>{{ team.name }}</b></td>
-                                <template v-for="(stall_sale_total_sum, index) in team_sale_list.team_sale_total_sum" :key="stall_sale_total_sum+index">
-                                    <th class="pl-2 text-center">{{ stall_sale_total_sum }}</th>
-                                </template>
-                            </tr>
-                            <tr>
-                                <th class="pl-2 text-end"></th>
-                                <template v-for="(stall_number, index) in team_sale_list.header" :key="stall_number+index">
-                                    <th class="pl-2 text-center">{{ stall_number }}</th>
-                                </template>
-                            </tr>
-
-
-                            <template v-for="(sales, date) in team_sale_list.sales_by_date" :key="date+index">
-                                <tr>
-                                    <td><b>{{ date }}</b></td>
-                                    <template v-for="(sale, index) in sales" :key="date+sale+index">
-                                        <template v-if="date == 'รวม' || index == sales.length -1 ">
-                                            <td class="pl-2 text-end font-weight-bold">{{ sale }}</td>
-                                        </template>
-                                        <template v-else>
-                                            <td class="pl-2 text-end">{{ sale }}</td>
-                                        </template>
+                        <div class="">
+                            <table v-if="team" class="mb-5">
+                                <tr><td><b>{{ team.name }}</b></td>
+                                    <template v-for="(stall_sale_total_sum, index) in team_sale_list.team_sale_total_sum" :key="stall_sale_total_sum+index">
+                                        <th class="pl-2 text-center">{{ stall_sale_total_sum }}</th>
                                     </template>
                                 </tr>
-                            </template>
-
-                            <template v-for="(stall) in team_sale_list" :key="stall.stall_number">
-                                <tr v-for="(sale, sale_index) in stall.sales" :key="stall.stall_number+sale.sale_date+sale.sale_date+sale.sale_total+sale.sale_count">
-                                    <td><template v-if="sale_index==0"><b>{{ stall.stall_number }}</b></template></td>
-                                    <td class="pl-2 text-end"><b>{{ sale.sale_date }}</b></td>
-                                    <td class="pl-2 text-end">{{ sale.sale_total }}</td>
-                                    <td class="pl-2 text-end">{{ sale.sale_count }}</td>
+                                <tr>
+                                    <th class="pl-2 text-end"></th>
+                                    <template v-for="(stall_number, index) in team_sale_list.header" :key="stall_number+index">
+                                        <th class="pl-2 text-center">{{ stall_number }}</th>
+                                    </template>
                                 </tr>
-                            </template>
-                              
-                        </table>
 
+
+                                <template v-for="(sales, date) in team_sale_list.sales_by_date" :key="date+index">
+                                    <tr>
+                                        <td><b>{{ date }}</b></td>
+                                        <template v-for="(sale, index) in sales" :key="date+sale+index">
+                                            <template v-if="date == 'รวม' || index == sales.length -1 ">
+                                                <td class="pl-2 text-end font-weight-bold">{{ sale }}</td>
+                                            </template>
+                                            <template v-else>
+                                                <td class="pl-2 text-end">{{ sale }}</td>
+                                            </template>
+                                        </template>
+                                    </tr>
+                                </template>
+
+                                <template v-for="(stall) in team_sale_list" :key="stall.stall_number">
+                                    <tr v-for="(sale, sale_index) in stall.sales" :key="stall.stall_number+sale.sale_date+sale.sale_date+sale.sale_total+sale.sale_count">
+                                        <td><template v-if="sale_index==0"><b>{{ stall.stall_number }}</b></template></td>
+                                        <td class="pl-2 text-end"><b>{{ sale.sale_date }}</b></td>
+                                        <td class="pl-2 text-end">{{ sale.sale_total }}</td>
+                                        <td class="pl-2 text-end">{{ sale.sale_count }}</td>
+                                    </tr>
+                                </template>
+                                
+                            </table>
+                        </div>
+
+                        
                         <table v-if="team_sale_list.length && false" class="mb-3">
                             <tr>
                             <th></th><th class="pl-2 text-end">วันที่</th><th class="pl-2 text-center">ยอดขาย</th><th class="pl-2 text-center">จำนวน</th>
@@ -249,3 +252,9 @@ export default {
     },
 };
 </script>
+<style lang="css" scoped>
+.table {
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+}
+</style>
