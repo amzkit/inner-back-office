@@ -26,3 +26,5 @@ Route::get('teams', [DataController::class, 'teams']);
 
 Route::get('stall/sales', [DataController::class, 'stall_sales']);
 Route::get('team/sales', [DataController::class, 'team_sales']);
+
+Route::get('people', [PeopleController::class, 'index']);

@@ -1,5 +1,7 @@
 @extends('layouts.vuetify')
 
 @section('content')
-    <index-component />
+<div class="container">
+    <import-component />
+</div>
 @endsection

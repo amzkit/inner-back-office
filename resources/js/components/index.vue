@@ -17,8 +17,14 @@
                             required
                         />
                         <div class="">
-                            <table v-if="team" class="mb-5">
-                                <tr><td><b>{{ team.name }}</b></td>
+                            <v-table                            
+                                fixed-header
+                                density="compact"
+                                v-if="team"
+                                class="mb-5"
+                            >
+                                <thead>
+                                <tr><th><b>{{ team.name }}</b></th>
                                     <template v-for="(stall_sale_total_sum, index) in team_sale_list.team_sale_total_sum" :key="stall_sale_total_sum+index">
                                         <th class="pl-2 text-center">{{ stall_sale_total_sum }}</th>
                                     </template>
@@ -29,6 +35,7 @@
                                         <th class="pl-2 text-center">{{ stall_number }}</th>
                                     </template>
                                 </tr>
+                                </thead>
 
 
                                 <template v-for="(sales, date) in team_sale_list.sales_by_date" :key="date+index">
@@ -54,7 +61,7 @@
                                     </tr>
                                 </template>
                                 
-                            </table>
+                            </v-table>
                         </div>
 
                         
@@ -131,7 +138,7 @@ export default {
 
 
         headers: [
-            { text: 'วันที่', value: 'sale_date', align: 'center', sortable: false},
+            { text: 'วันที่', value: 'sale_date', align: 'center', sortable: false, fixed: true},
             { text: 'ยอด', value: 'sale_total', align: 'start' , sortable: false},
             { text: 'จำนวน', value: 'sale_count', align: 'center' , sortable: false},
         ],

@@ -8,14 +8,24 @@ import './bootstrap';
 import { createApp } from 'vue';
 
 // Vuetify
+import '@mdi/font/css/materialdesignicons.css'
+
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
 const vuetify = createVuetify({
   components,
   directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
+  },
 })
 
 /**
@@ -24,15 +34,18 @@ const vuetify = createVuetify({
  * to use in your application's views. An example is included for you.
  */
 
-const app = createApp({}).use(vuetify);
+const app = createApp().use(vuetify);
 
 import ExampleComponent from './components/ExampleComponent.vue';
 import ImportComponent from './components/import.vue';
 import IndexComponent from './components/index.vue';
+import PeopleIndexComponent from './pages/people/index.vue';
 
 app.component('index-component', IndexComponent);
 app.component('example-component', ExampleComponent);
 app.component('import-component', ImportComponent);
+app.component('people-index-component', PeopleIndexComponent);
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
