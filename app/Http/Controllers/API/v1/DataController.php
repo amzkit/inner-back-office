@@ -159,7 +159,7 @@ class DataController extends Controller
                 $sale_date_sum += $sale->sale_total??0.0;
             }
             array_push($temp, $sale_date_sum);
-            $stall_sales_by_date[$date->format('Y-m-d')] = $temp;
+            $stall_sales_by_date[$date->format('d M')] = $temp;
         }
         //dd($sales_by_date);
         $stall_sum[count($stall_list)] = array_sum($stall_sum);

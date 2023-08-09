@@ -1,23 +1,43 @@
 <template>
     <div class="container">
-        <v-row class="align-center">
-            <v-col>
-                <div class="d-flex align-justify-center">
-                        <v-text-field v-model="search_text" variant="outlined" placeholder="ค้นหา" density="compact">
-                        </v-text-field>
-                        <v-btn class="mt-1 ml-2" color="primary">
-                            <v-icon color="white">
-                                mdi-magnify
-                            </v-icon>
-                            ค้นหา
-                        </v-btn>
+        <v-card class="align-center pb-0" density="compact">
+            <v-card-title class="">ค้นหา</v-card-title>
+            <v-card-text class="pb-1">
+                <div class="d-flex align-justify-center mb-2">
+                    <v-text-field v-model="search_text" variant="outlined" placeholder="ค้นหา" density="compact" hide-details>
+                    </v-text-field>
+                    <v-btn class="mt-1 ml-2" color="primary">
+                        <v-icon color="white">
+                            mdi-magnify
+                        </v-icon>
+                        ค้นหา
+                    </v-btn>
                 </div>
-            </v-col>
-        </v-row>
+                <div v-if="!advanced_search" class="text-center" @click="advanced_search=true">เพิ่มเติม</div>
+                <template v-if="advanced_search">
+                        <v-select variant="outlined" density="compact"
+                            class="mb-2"
+                            v-model="search_type_select"
+                            label="ประเภท"
+                            :items="search_type_list"
+                            hide-details
+                        ></v-select>
+
+                        <v-select variant="outlined" density="compact"
+                            class="mb-2"
+                            v-model="sort_type_select"
+                            label="เรียงตาม"
+                            :items="sort_type_list"
+                            hide-details
+                        ></v-select>                
+                    </template>
+            </v-card-text>
+        </v-card>
+        <v-row><v-col></v-col></v-row>
+
         <v-row justify="center" class="mb-1">
             <v-col class="my-1 py-0 ">
                 <v-card :loading="loading">
-
                     <v-card-title>
                     <span class="">ข้อมูล</span>
                     </v-card-title>
@@ -47,6 +67,7 @@
                             <tr
                                 v-for="person in people"
                                 :key="person.id"
+                                @click="person_select(person)"
                             >
                                 <td>{{ person.id }}</td>
                                 <td>{{ person.firstname }}</td>
@@ -72,6 +93,14 @@ export default {
     data: () => ({
         loading: true,
         
+
+        search_text: '',
+        search_type_select: null,
+        search_type_list: ['ผู้ประกอบการ', 'ลูกจ้าง', 'พนักงาน'],
+        sort_type_select: null,
+        sort_type_list: ['วีซ่าหมดอายุก่อน', 'อายุมากสุดก่อน'],
+        advanced_search: false,
+
         people: [],
 
         itemsPerPage: 5,
@@ -91,7 +120,6 @@ export default {
         loading: true,
         totalItems: 0,
 
-        search_text: '',
 
     }),
 
@@ -125,7 +153,8 @@ export default {
             });
             this.loading = false
         },
-        loadItems(){
+        person_select(person){
+            console.log(person)
 
         }
     },
