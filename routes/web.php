@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-});
+
 
 Auth::routes();
 
-Route::get('/import', [App\Http\Controllers\HomeController::class, 'import'])->name('import');
-Route::get('/people', [App\Http\Controllers\HomeController::class, 'people'])->name('people');
-
+Route::middleware('auth')->group(function(){
+    Route::get('/', function () {   return view('index');} );
+    Route::get('/import', [App\Http\Controllers\HomeController::class, 'import'])->name('import');
+    Route::get('/people', [App\Http\Controllers\HomeController::class, 'people'])->name('people');
+    Route::get('/people/{id}', [App\Http\Controllers\HomeController::class, 'people_show'])->name('people.show');
+});

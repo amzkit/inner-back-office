@@ -8,6 +8,15 @@
                     </v-card-title>
 
                     <v-card-text>
+                        <v-switch v-model="select_show_never_open_stall" label="แสดงร้านที่ไม่เคยเปิด" density="densed" color="primary"></v-switch>
+                        <v-select
+                            v-model="select_date_range_month"
+                            :items="date_range_month_list"
+                            item-text="name"
+                            label="เดือน"
+                            dense
+                            required
+                        />
                         <v-select
                             v-model="select_team"
                             :items="team_list"
@@ -24,7 +33,7 @@
                                 class="mb-5"
                             >
                                 <thead>
-                                <tr><th><b>{{ team.name }}</b></th>
+                                <tr>
                                     <template v-for="(stall_sale_total_sum, index) in team_sale_list.team_sale_total_sum" :key="stall_sale_total_sum+index">
                                         <th class="pl-2 text-center">{{ stall_sale_total_sum }}</th>
                                     </template>
@@ -32,21 +41,21 @@
                                 <tr>
                                     <th class="pl-2 text-end"></th>
                                     <template v-for="(stall_number, index) in team_sale_list.header" :key="stall_number+index">
-                                        <th class="pl-2 text-center">{{ stall_number }}</th>
+                                        <th class="pl-2 text-end font-weight-bold">{{ stall_number }}</th>
                                     </template>
                                 </tr>
                                 </thead>
 
 
-                                <template v-for="(sales, date) in team_sale_list.sales_by_date" :key="date+index">
+                                <template v-for="(sales, date) in team_sale_list.sales_by_date" :key="date">
                                     <tr>
-                                        <td><b>{{ date }}</b></td>
+                                        <td class="text-end font-weight-bold"><b>{{ date }}</b></td>
                                         <template v-for="(sale, index) in sales" :key="date+sale+index">
                                             <template v-if="date == 'รวม' || index == sales.length -1 ">
                                                 <td class="pl-2 text-end font-weight-bold">{{ sale }}</td>
                                             </template>
                                             <template v-else>
-                                                <td class="pl-2 text-end">{{ sale }}</td>
+                                                <td class="pl-2 text-end"><span :class="sale == '0.00'?'text-danger':''">{{ sale }}</span></td>
                                             </template>
                                         </template>
                                     </tr>
@@ -61,6 +70,32 @@
                                     </tr>
                                 </template>
                                 
+                                <template v-if="typeof insight.stall_no_sale_day_count != 'undefined'">
+                                    <thead>
+                                        <tr>
+
+                                        </tr>
+                                    </thead>
+
+                                    <tr>
+                                        <td class="text-end font-weight-bold">รวม</td>
+                                        <td class="pl-2 text-end font-weight-bold" v-for="(sales_sum, index) in insight.stall_sales_sum" :key="'index_'+index">
+                                            <span :class="no_sale_day_count == day_count?'text-danger': no_sale_day_count == 0?'text-success':''">{{ sales_sum }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-end font-weight-bold">เฉลี่ย</td>
+                                        <td class="pl-2 text-end font-weight-bold" v-for="(sales_avg, index) in insight.stall_sales_average" :key="'index_'+index">
+                                            <span :class="no_sale_day_count == day_count?'text-danger': no_sale_day_count == 0?'text-success':''">{{ sales_avg }}</span>
+                                        </td>
+                                    </tr> 
+                                    <tr>
+                                        <td class="text-end font-weight-bold">วันปิด</td>
+                                        <td class="pl-2 text-end font-weight-bold" v-for="(no_sale_day_count, index) in insight.stall_no_sale_day_count" :key="'index_'+index">
+                                            <span :class="no_sale_day_count == day_count?'text-danger': no_sale_day_count == 0?'text-success':''">{{ no_sale_day_count }}</span>
+                                        </td>
+                                    </tr>          
+                                </template>
                             </v-table>
                         </div>
 
@@ -135,13 +170,26 @@ export default {
 
         stall_sale_list: [],
         team_sale_list: [],
-
+        insight: [],
 
         headers: [
             { text: 'วันที่', value: 'sale_date', align: 'center', sortable: false, fixed: true},
             { text: 'ยอด', value: 'sale_total', align: 'start' , sortable: false},
             { text: 'จำนวน', value: 'sale_count', align: 'center' , sortable: false},
         ],
+
+        // Date Time Range
+        select_date_range_month: 9,
+        date_range_month_list: [
+            {value: -1, title:  "ทั้งหมด"},
+            {value: 6,  title:  "มิถุนายน"},
+            {value: 7,  title:  "กรกฎาคม"},
+            {value: 8,  title:  "สิงหาคม"},
+            {value: 9,  title:  "กันยายน"},
+        ],
+
+        select_show_never_open_stall: false,
+
         dataLoaded: false,
         options: {
             responsive: true,
@@ -175,6 +223,13 @@ export default {
     }),
 
     computed: {
+        day_count(){
+            let count = 0
+            if(typeof this.insight.day_count !== 'undefined'){
+                count = this.insight.day_count
+            }
+            return count
+        }
     },
 
     watch: {
@@ -182,6 +237,12 @@ export default {
             this.getStallSales()
         },
         select_team(){
+            this.getTeamSales()
+        },
+        select_date_range_month(){
+            this.getTeamSales()
+        },
+        select_show_never_open_stall(){
             this.getTeamSales()
         }
     },
@@ -243,11 +304,18 @@ export default {
             console.log("getting team sales");
 
             axios
-            .get('/api/team/sales', {params:{team:this.select_team}}).then(response => {
+            .get('/api/team/sales', {
+                params:{
+                    team:   this.select_team,
+                    date_range_month: this.select_date_range_month,
+                    show_never_open_stall: this.select_show_never_open_stall,
+                }
+            }).then(response => {
                 if (response.data.success == true) {
                     this.team_sale_list = []
                     this.team_sale_list = response.data.team_sale_list
                     this.team = response.data.team
+                    this.insight = response.data.insight
                     // console.log(this.stall_sale_list)
                 }
             })

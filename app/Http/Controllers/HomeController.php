@@ -30,4 +30,9 @@ class HomeController extends Controller
     {
         return view('pages.people.index');
     }
+
+    public function people_show($id)
+    {
+        return view('pages.people.show', ['id'=>$id]);
+    }
 }

@@ -116,30 +116,64 @@ class DataController extends Controller
     {
         $team_id = $request->team;
         $team = Team::find($team_id);
+        
+        $date_range_month = sprintf('%02d', $request->date_range_month);
+        $day_count = 0;
+
+        $show_never_open_stall = $request->show_never_open_stall=="true"?true:false;
 
         $team_stalls = TeamStall::where([['team_id','=', $team_id]])->get();
         $team_sale_list = [];
         $team_sale_total_sum = 0;
         $team_sale_count_sum = 0;
 
-        $from = date('20230801');
-        $to = date('Ymd');
+        
 
+        if($date_range_month == -1){
+            // Show all
+            $from = date('20230610');
+            $to = date('Ymd');
+        }else{
+            $from = date('Y'.$date_range_month.'01');
+            //$to = date('Y'.$date_range_month.'30');
+            $last_day = new DateTime(date('Y').'-'.$date_range_month.'-01');
+            $last_day->modify('last day of this month');
+    
+            // Compare last day with today
+            $today = new DateTime(date('Ymd'));
+            if($today > $last_day){
+                $to = $last_day->format('Ymd');
+            }else{
+                $to = $today->format('Ymd');
+            }
+        }
+
+
+        
         $dates = new DatePeriod(new DateTime($from), new DateInterval('P1D'), new DateTime($to));
 
         $team_sale_list = array();
 
         $stall_list = [];
-        foreach($team_stalls as $stall){
+        $stall_no_sale_day_count = array();
+
+        foreach($team_stalls as $cnt=>$stall){
             array_push($stall_list, $stall->stall_number);
+            $stall_no_sale_day_count[$cnt] = 0;
         }
         array_push($stall_list, 'รวม');
         $team_sale_list['header'] = $stall_list;
 
         $stall_sales_by_date = array();
-        $stall_sum = array();
+        $stall_sales_sum = array();
         $team_sum = 0;
+
+        $insight = array();
+        $stall_never_open_count = 0;
+        $stall_sales_average = array();
+
         foreach($dates as $i=>$date){
+            $day_count++;
             $temp = [];
             $sale_date_sum = 0.0;
             foreach($team_stalls as $j=>$stall){
@@ -147,27 +181,72 @@ class DataController extends Controller
                     ['stall_number', '=', $stall->stall_number],
                     ['sale_date','=', $date]
                     ])->first();
-                array_push($temp, $sale->sale_total??0.0);
-                if(!array_key_exists($j, $stall_sum)){
+                array_push($temp, number_format($sale->sale_total??0.0, 2));
+                if(!array_key_exists($j, $stall_sales_sum)){
                     //$stall_sum[$stall->stall_number] = 0;
-                    $stall_sum[$j] = 0;
-
+                    $stall_sales_sum[$j] = 0;
                 }
                 //$stall_sum[$stall->stall_number] += $sale->sale_total??0.0;
-                $stall_sum[$j] += $sale->sale_total??0.0;
+                $sale_total = number_format($sale->sale_total??0.0, 2);
+                $sale_total = str_replace(",", "", $sale_total);
 
+                $stall_sales_sum[$j] += $sale_total;
                 $sale_date_sum += $sale->sale_total??0.0;
+
+                // Insight
+                if($sale_total == 0){
+                    $stall_no_sale_day_count[$j]++;
+                }
+
             }
-            array_push($temp, $sale_date_sum);
-            $stall_sales_by_date[$date->format('d M')] = $temp;
+            array_push($temp, number_format($sale_date_sum, 2));
+            $stall_sales_by_date[$date->format('d/m')] = $temp;
         }
         //dd($sales_by_date);
-        $stall_sum[count($stall_list)] = array_sum($stall_sum);
 
-        $stall_sales_by_date['รวม'] = $stall_sum;
+
+        // Insight
+
+        // Sum
+        $stall_sales_sum[count($stall_list)-1] = number_format(array_sum($stall_sales_sum),2);
+        
+
+        foreach($stall_sales_sum as $index=>$sum){
+            $sum = str_replace(",", "", $sum);
+            $stall_sales_sum[$index] = number_format(floatval($sum), 2);
+
+            $stall_sales_average[$index] = number_format(floatval($sum) / $day_count, 2);
+
+            if(floatval($sum) == 0){
+                $stall_never_open_count++;
+
+                // Remove Never Open Stall
+                if(!$show_never_open_stall){
+                    foreach($stall_sales_by_date as $l=>$date){
+                        unset($stall_sales_by_date[$l][$index]);
+                    }
+                    unset($stall_sales_sum[$index]);
+                    unset($stall_sales_average[$index]);
+                    unset($stall_no_sale_day_count[$index]);
+
+
+                    unset($team_sale_list["header"][$index]);
+                }
+
+
+            }
+        }
+
+
+//        $stall_sales_by_date['รวม'] = $stall_sales_sum;
         $team_sale_list['sales_by_date'] = $stall_sales_by_date;
 
+        $insight['stall_never_open_count'] = $stall_never_open_count;
+        $insight['stall_no_sale_day_count'] = $stall_no_sale_day_count;
+        $insight['stall_sales_sum'] = $stall_sales_sum;
+        $insight['stall_sales_average'] = $stall_sales_average;
 
+        $insight['day_count'] = $day_count;
         /*
         foreach($team_stalls as $i=>$stall){
 
@@ -228,7 +307,7 @@ class DataController extends Controller
         //$team['team_sale_count_sum'] = $team_sale_count_sum;
 
 
-        return response()->json(['success'=>true, 'team'=>$team, 'team_sale_list'=>$team_sale_list]);
+        return response()->json(['success'=>true, 'team'=>$team, 'team_sale_list'=>$team_sale_list, 'insight'=>$insight]);
 
     }
 

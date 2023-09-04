@@ -50,5 +50,15 @@ class PeopleController extends Controller
         return response()->json(['success'=>true, 'people'=>$people_temp]);
     }
 
+    public function show(Request $request)
+    {
+        $id = $request->id??null;
+        if($id == "create"){
+            return response()->json(['success'=>false]);
+        }
 
+        $people = People::find($id);
+
+        return response()->json(['success'=>true, 'people'=>$people]);
+    }
 }

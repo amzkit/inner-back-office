@@ -40,11 +40,13 @@ import ExampleComponent from './components/ExampleComponent.vue';
 import ImportComponent from './components/import.vue';
 import IndexComponent from './components/index.vue';
 import PeopleIndexComponent from './pages/people/index.vue';
+import PeopleShowComponent from './pages/people/show.vue';
 
 app.component('index-component', IndexComponent);
 app.component('example-component', ExampleComponent);
 app.component('import-component', ImportComponent);
 app.component('people-index-component', PeopleIndexComponent);
+app.component('people-show-component', PeopleShowComponent);
 
 /**
  * The following block of code may be used to automatically register your

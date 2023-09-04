@@ -1,7 +1,14 @@
 <template>
     <div class="container">
         <v-card class="align-center pb-0" density="compact">
-            <v-card-title class="">ค้นหา</v-card-title>
+            <v-card-title class="">
+                <div class="d-flex justify-between">
+                    <div class="pr-2">ค้นหา</div>
+                    <v-btn color="green" density="" target="_people" :href="'/people/create'">
+                        <v-icon icon="mdi-plus"></v-icon> เพิ่มคน
+                    </v-btn>
+                </div>
+            </v-card-title>
             <v-card-text class="pb-1">
                 <div class="d-flex align-justify-center mb-2">
                     <v-text-field v-model="search_text" variant="outlined" placeholder="ค้นหา" density="compact" hide-details>
@@ -29,7 +36,8 @@
                             label="เรียงตาม"
                             :items="sort_type_list"
                             hide-details
-                        ></v-select>                
+                        ></v-select>
+
                     </template>
             </v-card-text>
         </v-card>
@@ -93,7 +101,6 @@ export default {
     data: () => ({
         loading: true,
         
-
         search_text: '',
         search_type_select: null,
         search_type_list: ['ผู้ประกอบการ', 'ลูกจ้าง', 'พนักงาน'],
