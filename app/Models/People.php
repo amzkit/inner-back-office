@@ -4,23 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+use App\Models\Passport;
 
 class People extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'passport_id',
-        'gender',
         'firstname',
         'lastname',
-        'type',
-        'date_of_birth',
-        'passport_issue_date',
-        'passport_expiry_date',
-        'arrival_date',
+        'firstname_th',
+        'lastname_th',
+        'role',
+        'gender',
         'mobile_number',
-        'police_arrival_reported_date',
-        'police_departure_reported_date',
+        'date_of_birth',
+        'national_id_number',
     ];
+
+
+    public function passports(): HasMany
+    {
+        return $this->hasMany(Passport::class);
+    }
 }

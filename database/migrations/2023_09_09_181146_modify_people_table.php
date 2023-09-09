@@ -11,6 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('people');
+
+        Schema::create('people', function (Blueprint $table) {
+            //
+            $table->id();
+            $table->string('national_id_number')->nullable();
+            $table->string('role')->nullable();
+            $table->string('firstname');
+            $table->string('lastname');
+            $table->string('firstname_th')->nullable();
+            $table->string('lastname_th')->nullable();
+            $table->string('gender')->nullable();
+            $table->date('date_of_birth')->nullable();
+            $table->string('mobile_number')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('people');
+
         Schema::create('people', function (Blueprint $table) {
             $table->id();
             $table->string('passport_id');
@@ -28,13 +53,5 @@ return new class extends Migration
             $table->date('police_departure_reported_date')->nullable();
             $table->timestamps();
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('people');
     }
 };

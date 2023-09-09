@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::middleware('auth')->group(function(){
-    Route::get('/', function () {   return view('index');} );
+    Route::get('/', function () {   return view('pages.index');} );
+    Route::get('/statistic', [App\Http\Controllers\HomeController::class, 'statistic']);
     Route::get('/import', [App\Http\Controllers\HomeController::class, 'import'])->name('import');
     Route::get('/people', [App\Http\Controllers\HomeController::class, 'people'])->name('people');
     Route::get('/people/{id}', [App\Http\Controllers\HomeController::class, 'people_show'])->name('people.show');

@@ -47,7 +47,7 @@ class PeopleController extends Controller
             array_push($people_temp, $temp);
         }
 
-        return response()->json(['success'=>true, 'people'=>$people_temp]);
+        return response()->json(['success'=>true, 'people'=>$people_temp, 'people_role'=>config('people.role')]);
     }
 
     public function show(Request $request)
@@ -59,6 +59,37 @@ class PeopleController extends Controller
 
         $people = People::find($id);
 
-        return response()->json(['success'=>true, 'people'=>$people]);
+        return response()->json(['success'=>true, 'people'=>$people, 'people_role'=>config('people.role'), 'people_gender'=>config('people.gender')]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'person.firstname' => 'required|max:255',
+            'person.lastname' => 'required|max:255',
+            'person.firstname_th' => 'max:255',
+            'person.lastname_th' => 'max:255',
+        ]);
+
+        $person = $request->person;
+
+        if(isset($person['id'])){
+            $temp = People::find($person['id']);
+            $temp->firstname = $person['firstname'];
+            $temp->lastname = $person['lastname'];
+            $temp->firstname_th = $person['firstname_th'];
+            $temp->lastname_th = $person['lastname_th'];
+            $temp->gender = $person['gender'];
+            $temp->mobile_number = $person['mobile_number'];
+            $temp->date_of_birth = $person['date_of_birth'];
+            $temp->national_id_number = $person['national_id_number'];
+            $temp->save();
+        }else{
+            $person = new People($request->person);
+            $person->save();
+        }
+
+        return response()->json(['success'=>true, 'person'=>$person]);
+
     }
 }

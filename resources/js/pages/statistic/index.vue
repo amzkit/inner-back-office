@@ -4,7 +4,7 @@
             <v-col class="my-1 py-0 ">
                 <v-card :loading="loading">
                     <v-card-title>
-                    <span class="">ข้อมูลย้อนหลัง</span>
+                        <span class="">ข้อมูลย้อนหลัง</span>
                     </v-card-title>
 
                     <v-card-text>
@@ -52,7 +52,7 @@
                                         <td class="text-end font-weight-bold"><b>{{ date }}</b></td>
                                         <template v-for="(sale, index) in sales" :key="date+sale+index">
                                             <template v-if="date == 'รวม' || index == sales.length -1 ">
-                                                <td class="pl-2 text-end font-weight-bold">{{ sale }}</td>
+                                                <td class="pl-2 text-end font-weight-bold"><span :class="sale == '0.00'?'text-danger':''">{{ sale }}</span></td>
                                             </template>
                                             <template v-else>
                                                 <td class="pl-2 text-end"><span :class="sale == '0.00'?'text-danger':''">{{ sale }}</span></td>
@@ -70,32 +70,45 @@
                                     </tr>
                                 </template>
                                 
-                                <template v-if="typeof insight.stall_no_sale_day_count != 'undefined'">
+                                <template v-if="true">
                                     <thead>
                                         <tr>
 
                                         </tr>
                                     </thead>
 
-                                    <tr>
+                                    <tr style="border-top: 1px solid #ddd" v-if="typeof insight.stall_sales_sum != 'undefined'">
                                         <td class="text-end font-weight-bold">รวม</td>
                                         <td class="pl-2 text-end font-weight-bold" v-for="(sales_sum, index) in insight.stall_sales_sum" :key="'index_'+index">
                                             <span :class="no_sale_day_count == day_count?'text-danger': no_sale_day_count == 0?'text-success':''">{{ sales_sum }}</span>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr v-if="typeof insight.stall_sales_average != 'undefined'">
                                         <td class="text-end font-weight-bold">เฉลี่ย</td>
                                         <td class="pl-2 text-end font-weight-bold" v-for="(sales_avg, index) in insight.stall_sales_average" :key="'index_'+index">
                                             <span :class="no_sale_day_count == day_count?'text-danger': no_sale_day_count == 0?'text-success':''">{{ sales_avg }}</span>
                                         </td>
-                                    </tr> 
-                                    <tr>
+                                    </tr>
+                                    <tr v-if="typeof insight.stall_sales_max != 'undefined'">
+                                        <td class="text-end font-weight-bold">สูงสุด</td>
+                                        <td class="pl-2 text-end font-weight-bold" v-for="(sales_max, index) in insight.stall_sales_max" :key="'index_'+index">
+                                            {{ sales_max }}
+                                        </td>
+                                    </tr>
+                                    <tr v-if="typeof insight.stall_sales_min != 'undefined'">
+                                        <td class="text-end font-weight-bold">ต่ำสุด</td>
+                                        <td class="pl-2 text-end font-weight-bold" v-for="(sales_min, index) in insight.stall_sales_min" :key="'index_'+index">
+                                            {{ sales_min }}
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top: 1px solid #ddd">
                                         <td class="text-end font-weight-bold">วันปิด</td>
                                         <td class="pl-2 text-end font-weight-bold" v-for="(no_sale_day_count, index) in insight.stall_no_sale_day_count" :key="'index_'+index">
                                             <span :class="no_sale_day_count == day_count?'text-danger': no_sale_day_count == 0?'text-success':''">{{ no_sale_day_count }}</span>
                                         </td>
-                                    </tr>          
+                                    </tr>
                                 </template>
+
                             </v-table>
                         </div>
 
@@ -157,9 +170,8 @@
 
 <script>
 
-import LineChart from './chart.vue'
 export default {
-    components: { LineChart },
+    components: {  },
     data: () => ({
         loading: true,
         select_stall_number: '',
@@ -254,7 +266,7 @@ export default {
 
     methods: {
         initialize(){
-            this.loading = true
+            this.loading = "primary"
 
             axios
             .get('/api/stalls').then(response => {
@@ -299,12 +311,11 @@ export default {
         },
 
         getTeamSales(){
-            this.loading = true
+            this.loading = "primary"
 
             console.log("getting team sales");
 
-            axios
-            .get('/api/team/sales', {
+            return axios.get('/api/team/sales', {
                 params:{
                     team:   this.select_team,
                     date_range_month: this.select_date_range_month,
@@ -317,12 +328,15 @@ export default {
                     this.team = response.data.team
                     this.insight = response.data.insight
                     // console.log(this.stall_sale_list)
+                    this.loading = false
+
                 }
             })
             .catch(error => {
                 console.log("getting data error");
+                this.loading = false
+
             });
-            this.loading = false
         },
     },
 };

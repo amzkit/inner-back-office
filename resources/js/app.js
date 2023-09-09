@@ -7,6 +7,8 @@
 import './bootstrap';
 import { createApp } from 'vue';
 
+import moment from 'moment';
+window.moment = moment
 // Vuetify
 import '@mdi/font/css/materialdesignicons.css'
 
@@ -16,8 +18,12 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
+import { VDatePicker } from 'vuetify/labs/VDatePicker'
+
 const vuetify = createVuetify({
-  components,
+  components:{
+    VDatePicker,
+  },
   directives,
   icons: {
     defaultSet: 'mdi',
@@ -26,6 +32,7 @@ const vuetify = createVuetify({
       mdi,
     },
   },
+
 })
 
 /**
@@ -38,12 +45,20 @@ const app = createApp().use(vuetify);
 
 import ExampleComponent from './components/ExampleComponent.vue';
 import ImportComponent from './components/import.vue';
-import IndexComponent from './components/index.vue';
+
+import IndexComponent from './pages/index.vue';
+import StatisticIndexComponent from './pages/statistic/index.vue';
 import PeopleIndexComponent from './pages/people/index.vue';
 import PeopleShowComponent from './pages/people/show.vue';
 
+import ChartComponent from './components/chart.vue';
+
+app.component('chart-component', ChartComponent);
+
 app.component('index-component', IndexComponent);
 app.component('example-component', ExampleComponent);
+
+app.component('statistic-index-component', StatisticIndexComponent);
 app.component('import-component', ImportComponent);
 app.component('people-index-component', PeopleIndexComponent);
 app.component('people-show-component', PeopleShowComponent);

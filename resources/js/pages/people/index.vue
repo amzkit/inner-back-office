@@ -13,20 +13,20 @@
                 <div class="d-flex align-justify-center mb-2">
                     <v-text-field v-model="search_text" variant="outlined" placeholder="ค้นหา" density="compact" hide-details>
                     </v-text-field>
-                    <v-btn class="mt-1 ml-2" color="primary">
+                    <v-btn class="mt-1 ml-2" color="indigo-darken-3">
                         <v-icon color="white">
                             mdi-magnify
                         </v-icon>
                         ค้นหา
                     </v-btn>
                 </div>
-                <div v-if="!advanced_search" class="text-center" @click="advanced_search=true">เพิ่มเติม</div>
+                <div v-if="!advanced_search" class="text-center" @click="advanced_search=true"><v-btn variant="text" density="densed" color="indigo-darken-3">เพิ่มเติม</v-btn></div>
                 <template v-if="advanced_search">
                         <v-select variant="outlined" density="compact"
                             class="mb-2"
-                            v-model="search_type_select"
+                            v-model="search_role_select"
                             label="ประเภท"
-                            :items="search_type_list"
+                            :items="search_role_list"
                             hide-details
                         ></v-select>
 
@@ -67,7 +67,7 @@
                                     Lastname
                                 </th>
                                 <th class="text-left">
-                                    Passport ID
+                                    
                                 </th>
                             </tr>
                             </thead>
@@ -75,7 +75,8 @@
                             <tr
                                 v-for="person in people"
                                 :key="person.id"
-                                @click="person_select(person)"
+                                @click="redirect(person)"
+                                style="cursor:pointer;"
                             >
                                 <td>{{ person.id }}</td>
                                 <td>{{ person.firstname }}</td>
@@ -102,8 +103,8 @@ export default {
         loading: true,
         
         search_text: '',
-        search_type_select: null,
-        search_type_list: ['ผู้ประกอบการ', 'ลูกจ้าง', 'พนักงาน'],
+        search_role_select: null,
+        search_role_list: [],
         sort_type_select: null,
         sort_type_list: ['วีซ่าหมดอายุก่อน', 'อายุมากสุดก่อน'],
         advanced_search: false,
@@ -113,14 +114,14 @@ export default {
         itemsPerPage: 5,
         headers: [
             {
-            title: 'ID',
-            align: 'start',
-            sortable: false,
-            key: 'id',
+                title: 'ID',
+                align: 'start',
+                sortable: false,
+                key: 'id',
             },
             { title: 'Firstname', key: 'firstname', align: 'center' },
             { title: 'Lastname', key: 'lastname', align: 'center' },
-            { title: 'Passport ID', key: 'passport_id', align: 'center' },
+            { title: 'Passport ID', key: 'date_of', align: 'center' },
 
         ],
         serverItems: [],
@@ -146,6 +147,9 @@ export default {
     },
 
     methods: {
+        redirect(person){
+            window.location.href = "/people/" + person.id
+        },
         initialize(){
             this.loading = true
 
@@ -153,6 +157,7 @@ export default {
             .get('/api/people').then(response => {
                 if (response.data.success == true) {
                     this.people = response.data.people
+                    this.search_role_list = response.data.people_role
                 }
             })
             .catch(error => {
@@ -162,7 +167,6 @@ export default {
         },
         person_select(person){
             console.log(person)
-
         }
     },
 };

@@ -26,6 +26,11 @@ class HomeController extends Controller
         return view('pages.import');
     }
 
+    public function statistic()
+    {
+        return view('pages.statistic.index');
+    }
+
     public function people()
     {
         return view('pages.people.index');

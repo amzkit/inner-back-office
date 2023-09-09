@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 use App\Models\Sale;
 use App\Models\Stall;
+use App\Models\Setting;
 
 use Date;
 
@@ -83,8 +84,6 @@ class UploadController extends Controller
                 $header_row = $worksheet->rangeToArray('A2:' . $highestColumn . '2')[0];
                 //dd($header_row, $example_row);
 
-
-
                 //dd($header_row, $column_names['stall_number'][0], array_search($column_names['stall_number'][0], $header_row));
                 $column_names = [
                     'stall_number'  => ['摊位号'],
@@ -106,6 +105,8 @@ class UploadController extends Controller
                 }else{
                     $file_type_day = false;
                 }
+
+                $sale_date = null;
 
                 if($file_type_day){
                     // File Type => Day sales
@@ -239,9 +240,12 @@ class UploadController extends Controller
                 //dd($sale_date, $stall_number, $sale_total, $sale_count, $transaction_fee, $sale_fee);
             }
 
+            $last_update = Setting::where('name', 'import_sales_updated_at')->first();
+            $last_update->val = $sale_date;
+            $last_update->save();
         }
 
-        return response()->json(['success'=>true]);
+        return response()->json(['success'=>true, 'import_sales_updated_at'=>$sale_date]);
             
         
     }

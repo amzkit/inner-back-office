@@ -29,3 +29,4 @@ Route::get('team/sales', [DataController::class, 'team_sales']);
 
 Route::get('people', [PeopleController::class, 'index']);
 Route::get('people/{id}', [PeopleController::class, 'show']);
+Route::post('people/store', [PeopleController::class, 'store']);

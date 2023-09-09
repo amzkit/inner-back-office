@@ -170,7 +170,6 @@ class DataController extends Controller
 
         $stall_list = [];
         $stall_no_sale_day_count = array();
-        $stall_no_sale_day_sum = 0;
 
         foreach($team_stalls as $cnt=>$stall){
             array_push($stall_list, $stall->stall_number);
@@ -203,7 +202,7 @@ class DataController extends Controller
                     ['stall_number', '=', $stall->stall_number],
                     ['sale_date','=', $date]
                     ])->first();
-                array_push($temp, $sale->sale_total??0.0);
+                array_push($temp, number_format($sale->sale_total??0.0, 2));
 
                 if(!array_key_exists($j, $stall_sales_sum)){
                     //$stall_sum[$stall->stall_number] = 0;
@@ -215,12 +214,12 @@ class DataController extends Controller
                 }
                 if(!array_key_exists($j, $stall_sales_min)){
                     //$stall_sum[$stall->stall_number] = 0;
-                    $stall_sales_min[$j] = $sale->sale_total??0.0;
+                    $stall_sales_min[$j] = number_format($sale->sale_total??0.0, 2);
                 }
 
                 //$stall_sum[$stall->stall_number] += $sale->sale_total??0.0;
-                $sale_total = $sale->sale_total??0.0;
-                //$sale_total = str_replace(",", "", $sale_total);
+                $sale_total = number_format($sale->sale_total??0.0, 2);
+                $sale_total = str_replace(",", "", $sale_total);
 
                 $stall_sales_sum[$j] += $sale_total;
                 $sales_by_date_sum += $sale->sale_total??0.0;
@@ -231,23 +230,23 @@ class DataController extends Controller
                 }
 
                 if($stall_sales_max[$j] < $sale_total){
-                    $stall_sales_max[$j] = $sale->sale_total??0.0;
+                    $stall_sales_max[$j] = number_format($sale->sale_total??0.0, 2);
                 }
 
                 if($stall_sales_min[$j] > $sale_total){
-                    $stall_sales_min[$j] = $sale->sale_total??0.0;
+                    $stall_sales_min[$j] = number_format($sale->sale_total??0.0, 2);
                 }
 
             }
-            array_push($temp, $sales_by_date_sum);
+            array_push($temp, number_format($sales_by_date_sum, 2));
             $stall_sales_by_date[$date->format('d/m')] = $temp;
 
             if($sales_by_date_sum_max < $sales_by_date_sum){
-                $sales_by_date_sum_max = $sales_by_date_sum;
+                $sales_by_date_sum_max = number_format($sales_by_date_sum, 2);
             }
 
             if($sales_by_date_sum_min > $sales_by_date_sum){
-                $sales_by_date_sum_min = $sales_by_date_sum;
+                $sales_by_date_sum_min = number_format($sales_by_date_sum, 2);
             }
 
             
@@ -258,16 +257,16 @@ class DataController extends Controller
         // Insight
 
         // Sum
-        $stall_sales_sum[count($stall_list)-1] = array_sum($stall_sales_sum);
+        $stall_sales_sum[count($stall_list)-1] = number_format(array_sum($stall_sales_sum),2);
         
         $stall_sales_max[count($stall_list)-1] = $sales_by_date_sum_max;
         $stall_sales_min[count($stall_list)-1] = $sales_by_date_sum_min;
 
         foreach($stall_sales_sum as $index=>$sum){
             $sum = str_replace(",", "", $sum);
-            $stall_sales_sum[$index] = floatval($sum);
+            $stall_sales_sum[$index] = number_format(floatval($sum), 2);
 
-            $stall_sales_average[$index] = floatval($sum) / $day_count;
+            $stall_sales_average[$index] = number_format(floatval($sum) / $day_count, 2);
 
             if(floatval($sum) == 0){
                 $stall_never_open_count++;
@@ -290,35 +289,7 @@ class DataController extends Controller
                 
             }
         }
-        $stall_no_sale_day_count[count($stall_list)-1] = array_sum($stall_no_sale_day_count);
 
-
-
-//      Casting number format
-        function cast_number($outer_arr){
-            $temp = [];
-            foreach($outer_arr as $i=>$val){
-                $temp[$i] = number_format($val, 2);
-            }
-            return $temp;
-        }
-
-        function cast_number_2round($outer_arr){
-            $temp = [];
-            foreach($outer_arr as $i=>$inner_arr){
-                $temp[$i] = [];
-                foreach($inner_arr as $j=>$val){
-                    $temp[$i][$j] = number_format($val, 2);
-                }
-            }
-            return $temp;
-        }
-
-        $stall_sales_by_date = cast_number_2round($stall_sales_by_date);
-        $stall_sales_sum = cast_number($stall_sales_sum);
-        $stall_sales_average = cast_number($stall_sales_average);
-        $stall_sales_max = cast_number($stall_sales_max);
-        $stall_sales_min = cast_number($stall_sales_min);
 
 //        $stall_sales_by_date['รวม'] = $stall_sales_sum;
         $team_sale_list['sales_by_date'] = $stall_sales_by_date;
