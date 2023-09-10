@@ -4,7 +4,7 @@
             <v-col class="my-1 py-0 pt-3">
                 <v-card :loading="loading">
                     <v-card-title>
-                        <span class="text-indigo">ข้อมูลย้อนหลัง</span>
+                        <span class="text-indigo">ข้อมูลยอดขาย</span>
                     </v-card-title>
 
                     <v-card-text>
@@ -79,7 +79,7 @@
                                         </tr>
                                     </thead>
 
-                                    <tr style="border-top: 1px solid #ddd" v-if="typeof insight.stall_sales_sum != 'undefined'">
+                                    <tr style="border-top: 1px solid #3f51b5 ;background-color: #c3cdff ;" v-if="typeof insight.stall_sales_sum != 'undefined'">
                                         <td class="text-end font-weight-bold">รวม</td>
                                         <td class="pl-2 text-end font-weight-bold" v-for="(sales_sum, index) in insight.stall_sales_sum" :key="'index_'+index">
                                             <span>{{ sales_sum }}</span>
@@ -218,7 +218,6 @@ export default {
         },
         options:{
             scales: {
-
                 x: {
                     ticks: {
                         font: {
@@ -250,7 +249,7 @@ export default {
                 },
                 title: {
                     display: true,
-                    text: 'กราฟแสดงข้อมูลย้อนหลัง',
+                    text: 'ข้อมูลยอดขายย้อนหลัง',
                     font: {
                         family: "IBM Plex Sans Thai",
                     }
@@ -372,8 +371,11 @@ export default {
 };
 </script>
 <style lang="css" scoped>
-.table {
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
-}
+    .table {
+        max-height: calc(100vh - 300px);
+        overflow-y: auto;
+    }
+
+    tr:nth-child(even) {background-color: #f2f2f2;}
+
 </style>

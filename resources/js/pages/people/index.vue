@@ -172,8 +172,9 @@ export default {
 };
 </script>
 <style lang="css" scoped>
-.table {
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
-}
+    .table {
+        max-height: calc(100vh - 300px);
+        overflow-y: auto;
+    }
+
 </style>
