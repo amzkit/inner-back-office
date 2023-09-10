@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <v-card class="align-center pb-0" density="compact">
-            <v-card-title class="">
+        <v-card class="align-center pb-1" density="compact">
+            <v-card-title class="pt-3">
                 <div class="d-flex justify-between">
                     <div class="pr-2">ค้นหา</div>
                     <v-btn color="green" density="" target="_people" :href="'/people/create'">
@@ -20,7 +20,7 @@
                         ค้นหา
                     </v-btn>
                 </div>
-                <div v-if="!advanced_search" class="text-center" @click="advanced_search=true"><v-btn variant="text" density="densed" color="indigo-darken-3">เพิ่มเติม</v-btn></div>
+                <div v-if="!advanced_search" class="text-center" @click="advanced_search=true"><v-btn variant="outlined" density="compact" color="indigo-darken-3">เพิ่มเติม</v-btn></div>
                 <template v-if="advanced_search">
                         <v-select variant="outlined" density="compact"
                             class="mb-2"
@@ -47,7 +47,7 @@
             <v-col class="my-1 py-0 ">
                 <v-card :loading="loading">
                     <v-card-title>
-                    <span class="">ข้อมูล</span>
+                    <span class="">ข้อมูลบุคคล</span>
                     </v-card-title>
 
                     <v-card-text>

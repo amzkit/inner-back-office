@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container px-0">
         <v-row justify="center" class="pl-2 pr-2 mb-1">
             <v-col class="my-1 py-0 pt-3">
                 <v-card :loading="loading">
@@ -25,13 +25,15 @@
                             dense
                             required
                         />
-                        <div class="">
+                        <div class="" v-if="team">
+                            <LineChart :chartdata="chartdata" :options="options" />
+
                             <v-table                            
                                 fixed-header
                                 density="compact"
-                                v-if="team"
                                 class="mb-5"
                             >
+
                                 <thead>
                                 <tr>
                                     <template v-for="(stall_sale_total_sum, index) in team_sale_list.team_sale_total_sum" :key="stall_sale_total_sum+index">
@@ -161,7 +163,6 @@
             </v-col>
         </v-row>
         <v-row>
-            <LineChart :chartdata="chartdata" :options="options" />
         </v-row>
     </div>
 </template>
@@ -174,7 +175,7 @@ export default {
     components: { LineChart },
     data: () => ({
 
-        loading: true,
+        loading: "indigo",
         select_stall_number: '',
         stall_list: [],
         select_team: '',
@@ -210,14 +211,9 @@ export default {
                 {
                     label: 'ข้อมูลรวม',
                     backgroundColor: '#f87979',
-                    data: [40, 39, 10, 40, 39, 80, 40]
+                    data: []
                 },
 
-                {
-                    label: '2',
-                    backgroundColor: '#f87979',
-                    data: [40, 39, 10, 40, 39, 80, 40]
-                }
             ]
         },
         options:{
@@ -254,7 +250,7 @@ export default {
                 },
                 title: {
                     display: true,
-                    text: 'Custom Chart Title',
+                    text: 'กราฟแสดงข้อมูลย้อนหลัง',
                     font: {
                         family: "IBM Plex Sans Thai",
                     }
@@ -297,7 +293,7 @@ export default {
 
     methods: {
         initialize(){
-            this.loading = "primary"
+            this.loading = "indigo"
 
             axios
             .get('/api/stalls').then(response => {
@@ -323,7 +319,7 @@ export default {
         },
 
         getStallSales(){
-            this.loading = true
+            this.loading = "indigo"
 
             console.log("getting stall sales");
 
@@ -343,7 +339,7 @@ export default {
         },
 
         getTeamSales(){
-            this.loading = "primary"
+            this.loading = "indigo"
 
             console.log("getting team sales");
 

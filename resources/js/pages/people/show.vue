@@ -32,7 +32,7 @@
                     <div class="my-1"><v-text-field v-model="person.lastname_th" label="นามสกุล ภาษาไทย" variant="outlined" placeholder="นามสกุล" density="compact" hide-details /></div>
                     <div class="my-1"><v-select v-model="person.gender" :items="gender_list" variant="outlined" label="เพศ (Gender)" density="compact" hide-details></v-select></div>
                     <div class="my-1"><v-text-field v-model="person.mobile_number" type="number" label="เบอร์โทรศัพท์ (Mobile Number)" variant="outlined" placeholder="เบอร์โทรศัพท์" density="compact" hide-details /></div>
-                    <div class="my-1"><v-text-field v-model="person.date_of_birth" :max="today" type="date" label="วันเกิด (Date of Birth)" variant="outlined" placeholder="วันเกิด" density="compact" hide-details mask="YYYYMMDD"/></div>
+                    <div class="my-1"><v-text-field v-model="person.date_of_birth" :max="today" type="date" label="วันเกิด (Date of Birth)" variant="outlined" placeholder="วันเกิด" density="compact" hide-details /></div>
                     <div class="my-1"><v-text-field v-model="person.national_id_number" label="หมายเลขบัตรประชาชน (National ID Number)" variant="outlined" placeholder="หมายเลขบัตรประชาชน" density="compact" hide-details /></div>
 
 
