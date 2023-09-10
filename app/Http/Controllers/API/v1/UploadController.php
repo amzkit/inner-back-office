@@ -240,9 +240,9 @@ class UploadController extends Controller
                 //dd($sale_date, $stall_number, $sale_total, $sale_count, $transaction_fee, $sale_fee);
             }
 
-            $last_update = Setting::where('name', 'import_sales_updated_at')->first();
-            $last_update->val = $sale_date;
-            $last_update->save();
+            //$last_update = Setting::where('name', 'import_sales_updated_at')->first();
+            //$last_update->val = $sale_date;
+            //$last_update->save();
         }
 
         return response()->json(['success'=>true, 'import_sales_updated_at'=>$sale_date]);

@@ -152,7 +152,8 @@ class DataController extends Controller
             $to = $to;
         }
 
-        $last_update = new DateTime(date(Setting::where('name', 'import_sales_updated_at')->first()->val));
+        //$last_update = new DateTime(date(Setting::where('name', 'import_sales_updated_at')->first()->val));
+        $last_update = new DateTime(Sale::orderBy('sale_date', 'desc')->first()->sale_date);
         $last_update->modify('next day');
 
         if($last_update < $to){
@@ -253,7 +254,6 @@ class DataController extends Controller
             
         }
         //dd($sales_by_date);
-
 
         // Insight
 
@@ -390,8 +390,57 @@ class DataController extends Controller
         //$team['team_sale_total_sum'] = $team_sale_total_sum;
         //$team['team_sale_count_sum'] = $team_sale_count_sum;
 
+//  Chart Data
+        $chartdata = [];
+        
+        // x axis : date list
+        $x_axis = array_keys($stall_sales_by_date);
+        // y axis : sales by stall
+        $y_axis = [];
 
-        return response()->json(['success'=>true, 'team'=>$team, 'team_sale_list'=>$team_sale_list, 'insight'=>$insight]);
+        $stall_index_list = array_keys($stall_sales_by_date[$x_axis[0]]);
+        //dd($stall_list);
+        $stall_count_index = 0;
+
+        foreach(array_values($team_sale_list["header"]) as $i=>$stall){
+            $stall = [
+                "label"=>$stall,
+                "data"=>[],
+            ];
+            $index = 0;
+            //dd($stall_list);
+            foreach($stall_sales_by_date as $j=>$sales){
+                $sales = array_values($sales);
+
+                if($i==2){
+                    //dd($i, $sales);
+                }
+                array_push($stall['data'], str_replace(",", "", $sales[$i]));
+
+
+            }
+            $index++;
+
+            /*
+            foreach($stall_sales_by_date as $j=>$sales){
+                foreach($sales as $k=>$sale){
+                    array_push($stall['data'], str_replace(",", "", $sale));
+                }
+                //dd($i, $j, $stall_sales_by_date, $stall_sales_by_date[$j]);
+            }
+            */
+            $stall_count_index++;
+            array_push($y_axis, $stall);
+        }
+
+        //dd($stall_sales_by_date, $y_axis);
+
+        $chartdata['labels']    =   $x_axis;
+        $chartdata['datasets']  =   $y_axis;
+
+
+
+        return response()->json(['success'=>true, 'team'=>$team, 'team_sale_list'=>$team_sale_list, 'chartdata'=>$chartdata, 'insight'=>$insight]);
 
     }
 

@@ -1,14 +1,14 @@
 <template>
     <div class="container">
         <v-row justify="center" class="pl-2 pr-2 mb-1">
-            <v-col class="my-1 py-0 ">
+            <v-col class="my-1 py-0 pt-3">
                 <v-card :loading="loading">
                     <v-card-title>
-                        <span class="">ข้อมูลย้อนหลัง</span>
+                        <span class="text-indigo">ข้อมูลย้อนหลัง</span>
                     </v-card-title>
 
                     <v-card-text>
-                        <v-switch v-model="select_show_never_open_stall" label="แสดงร้านที่ไม่เคยเปิด" density="densed" color="primary"></v-switch>
+                        <v-switch v-model="select_show_never_open_stall" label="แสดงร้านที่ไม่เคยเปิด" density="compact" color="indigo"></v-switch>
                         <v-select
                             v-model="select_date_range_month"
                             :items="date_range_month_list"
@@ -41,7 +41,7 @@
                                 <tr>
                                     <th class="pl-2 text-end"></th>
                                     <template v-for="(stall_number, index) in team_sale_list.header" :key="stall_number+index">
-                                        <th class="pl-2 text-end font-weight-bold">{{ stall_number }}</th>
+                                        <th class="pl-2 text-end font-weight-bold text-indigo">{{ stall_number }}</th>
                                     </template>
                                 </tr>
                                 </thead>
@@ -49,7 +49,7 @@
 
                                 <template v-for="(sales, date) in team_sale_list.sales_by_date" :key="date">
                                     <tr>
-                                        <td class="text-end font-weight-bold"><b>{{ date }}</b></td>
+                                        <td class="text-end font-weight-bold text-indigo">{{ date }}</td>
                                         <template v-for="(sale, index) in sales" :key="date+sale+index">
                                             <template v-if="date == 'รวม' || index == sales.length -1 ">
                                                 <td class="pl-2 text-end font-weight-bold"><span :class="sale == '0.00'?'text-danger':''">{{ sale }}</span></td>
@@ -80,13 +80,13 @@
                                     <tr style="border-top: 1px solid #ddd" v-if="typeof insight.stall_sales_sum != 'undefined'">
                                         <td class="text-end font-weight-bold">รวม</td>
                                         <td class="pl-2 text-end font-weight-bold" v-for="(sales_sum, index) in insight.stall_sales_sum" :key="'index_'+index">
-                                            <span :class="no_sale_day_count == day_count?'text-danger': no_sale_day_count == 0?'text-success':''">{{ sales_sum }}</span>
+                                            <span>{{ sales_sum }}</span>
                                         </td>
                                     </tr>
                                     <tr v-if="typeof insight.stall_sales_average != 'undefined'">
                                         <td class="text-end font-weight-bold">เฉลี่ย</td>
                                         <td class="pl-2 text-end font-weight-bold" v-for="(sales_avg, index) in insight.stall_sales_average" :key="'index_'+index">
-                                            <span :class="no_sale_day_count == day_count?'text-danger': no_sale_day_count == 0?'text-success':''">{{ sales_avg }}</span>
+                                            <span>{{ sales_avg }}</span>
                                         </td>
                                     </tr>
                                     <tr v-if="typeof insight.stall_sales_max != 'undefined'">
@@ -108,7 +108,7 @@
                                         </td>
                                     </tr>
                                 </template>
-
+                                
                             </v-table>
                         </div>
 
@@ -144,12 +144,7 @@
                             required
                         />
 
-                        <line-chart
-                            class="pt-2"
-                            v-if="false"
-                            :chartdata="chart_data"
-                            :options="options"
-                        />
+
 
                         <table v-if="stall_sale_list.length">
                             <tr><td>วันที่</td><td class="pl-2 text-center">ยอดขาย</td><td class="pl-2 text-center">จำนวน</td></tr>
@@ -165,14 +160,20 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-row>
+            <LineChart :chartdata="chartdata" :options="options" />
+        </v-row>
     </div>
 </template>
 
 <script>
 
+import LineChart from '../../components/LineChart.vue'
+
 export default {
-    components: {  },
+    components: { LineChart },
     data: () => ({
+
         loading: true,
         select_stall_number: '',
         stall_list: [],
@@ -201,37 +202,66 @@ export default {
         ],
 
         select_show_never_open_stall: false,
-
+//  Chart
         dataLoaded: false,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            legend: {
-                labels: {
-                    // This more specific font property overrides the global property
-                    fontFamily: "Kanit"
+        chartdata: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [
+                {
+                    label: 'ข้อมูลรวม',
+                    backgroundColor: '#f87979',
+                    data: [40, 39, 10, 40, 39, 80, 40]
+                },
+
+                {
+                    label: '2',
+                    backgroundColor: '#f87979',
+                    data: [40, 39, 10, 40, 39, 80, 40]
+                }
+            ]
+        },
+        options:{
+            scales: {
+
+                x: {
+                    ticks: {
+                        font: {
+                            family: "IBM Plex Sans Thai",
+                        }
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: {
+                            family: "IBM Plex Sans Thai",
+                        },
+                        callback: function(value, index, ticks) {
+                            return '¥' + value;
+                        }
+                    }
                 }
             },
-            scales: {
-                xAxes: [{
-                    ticks: {
-                        fontFamily: "Kanit",
+            plugins:{
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        // This more specific font property overrides the global property
+                        font:{
+                            family: "IBM Plex Sans Thai",
+                            size: 14,
+                        }
+                    },
+                },
+                title: {
+                    display: true,
+                    text: 'Custom Chart Title',
+                    font: {
+                        family: "IBM Plex Sans Thai",
                     }
-                }],
-                yAxes: [{
-                    ticks: {
-                        min: 0,
-                        suggestedMax: 50,
-                        stepSize: 10,
-                        reverse: false,
-                        beginAtZero: true,
-                        fontFamily: "Kanit",
-                    }
-                }],
+                },
+                
             },
-        },
-        chart_data: {},
-
+        }
     }),
 
     computed: {
@@ -241,7 +271,8 @@ export default {
                 count = this.insight.day_count
             }
             return count
-        }
+        },
+ 
     },
 
     watch: {
@@ -302,6 +333,7 @@ export default {
                     this.stall_sale_list = []
                     this.stall_sale_list = response.data.stall_sale_list
                     // console.log(this.stall_sale_list)
+
                 }
             })
             .catch(error => {
@@ -328,6 +360,8 @@ export default {
                     this.team = response.data.team
                     this.insight = response.data.insight
                     // console.log(this.stall_sale_list)
+                    this.chartdata = response.data.chartdata
+
                     this.loading = false
 
                 }

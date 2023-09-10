@@ -80,6 +80,7 @@ class PeopleController extends Controller
             $temp->firstname_th = $person['firstname_th'];
             $temp->lastname_th = $person['lastname_th'];
             $temp->gender = $person['gender'];
+            $temp->role = $person['role'];
             $temp->mobile_number = $person['mobile_number'];
             $temp->date_of_birth = $person['date_of_birth'];
             $temp->national_id_number = $person['national_id_number'];
