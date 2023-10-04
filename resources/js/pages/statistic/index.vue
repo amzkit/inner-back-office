@@ -169,6 +169,7 @@
 
 <script>
 
+import moment from 'moment';
 import LineChart from '../../components/LineChart.vue'
 
 export default {
@@ -193,13 +194,16 @@ export default {
         ],
 
         // Date Time Range
-        select_date_range_month: 9,
+        select_date_range_month: -1,
         date_range_month_list: [
             {value: -1, title:  "ทั้งหมด"},
             {value: 6,  title:  "มิถุนายน"},
             {value: 7,  title:  "กรกฎาคม"},
             {value: 8,  title:  "สิงหาคม"},
             {value: 9,  title:  "กันยายน"},
+            {value: 10,  title:  "ตุลาคม"},
+            {value: 11,  title:  "พฤศจิกายน"},
+            {value: 12,  title:  "ธันวาคม"},
         ],
 
         select_show_never_open_stall: false,
@@ -314,6 +318,8 @@ export default {
                 console.log("getting data error");
             });
 
+            let this_month = parseInt(moment().format('M'))
+            this.select_date_range_month = this_month
             this.loading = false
         },
 

@@ -58,7 +58,7 @@ export default {
         },
         onFileSelected(event){
             if(event == null)   return
-            this.loading = true
+            this.loading = "indigo"
             var uploadFile = document.querySelector('#file');
             console.log("File Selected", uploadFile.files[0].name)
             var formData = new FormData();

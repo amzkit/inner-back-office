@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('passports', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('people_id');
+            $table->unsignedBigInteger('people_id');
             $table->date('issue_date')->nullable();
             $table->date('expiry_date')->nullable();
             $table->timestamps();

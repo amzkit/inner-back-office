@@ -38,6 +38,13 @@ class DataController extends Controller
 
     }
 
+    public function home(Request $request)
+    {
+        $last_update = new DateTime(Sale::orderBy('sale_date', 'desc')->first()->sale_date);
+        $last_update = $last_update->format('Y.m.d');
+        return response()->json(['success'=>true, 'last_update'=>$last_update]);
+    }
+
     public function stalls(Request $request)
     {
         $stalls = Stall::orderBy('number')->get();
