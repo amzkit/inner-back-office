@@ -1,5 +1,5 @@
 @extends('layouts.vuetify')
 
 @section('content')
-    <index-component />
+    <!-- index-component />
 @endsection
